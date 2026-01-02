@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אתר מכירות - ניהול קטגוריות ומוצרים</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* איפוס והגדרות כלליות */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f7f7f7;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* עיצוב הכותרת והניווט */
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .top-bar {
+            background-color: #3665f3;
+            color: white;
+            padding: 8px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .logo span {
+            color: #ffdf00;
+        }
+        
+        .search-bar {
+            flex-grow: 1;
+            max-width: 600px;
+            margin: 0 20px;
+        }
+        
+        .search-bar form {
+            display: flex;
+        }
+        
+        .search-bar input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 30px 0 0 30px;
+            font-size: 16px;
+        }
+        
+        .search-bar button {
+            background-color: #ffdf00;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 0 30px 30px 0;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .user-actions a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .user-actions i {
+            margin-left: 5px;
+        }
+        
+        /* עיצוב תפריט הקטגוריות */
+        .categories-nav {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e1e1e1;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .categories-nav ul {
+            display: flex;
+            list-style: none;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .categories-nav a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        
+        .categories-nav a:hover {
+            background-color: #e9ecef;
+            color: #3665f3;
+        }
+        
+        .admin-panel-link {
+            background-color: #3665f3;
+            color: white !important;
+            padding: 8px 15px !important;
+            border-radius: 4px;
+        }
+        
+        /* עיצוב תוכן ראשי */
+        .main-container {
+            display: flex;
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+        
+        .sidebar h3 {
+            margin-bottom: 15px;
+            color: #3665f3;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+        }
+        
+        .sidebar li {
+            margin-bottom: 10px;
+        }
+        
+        .sidebar a {
+            text-decoration: none;
+            color: #555;
+            display: block;
+            padding: 8px 10px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        
+        .sidebar a:hover {
+            background-color: #f0f7ff;
+            color: #3665f3;
+        }
+        
+        /* עיצוב אזור המוצרים */
+        .products-area {
+            flex-grow: 1;
+        }
+        
+        .page-title {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-title h1 {
+            color: #3665f3;
+            margin-bottom: 10px;
+        }
+        
+        .page-title p {
+            color: #666;
+        }
+        
+        .add-product-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .product-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .product-image {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+        
+        .product-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #e41f1f;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .product-info {
+            padding: 15px;
+        }
+        
+        .product-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            height: 40px;
+            overflow: hidden;
+        }
+        
+        .product-price {
+            color: #3665f3;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .product-original-price {
+            color: #999;
+            text-decoration: line-through;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        .edit-product-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #3665f3;
+            font-size: 12px;
+            display: none;
+        }
+        
+        .product-card:hover .edit-product-btn {
+            display: block;
+        }
+        
+        /* עיצוב פוטר */
+        footer {
+            background-color: #2d2d2d;
+            color: #ddd;
+            padding: 40px 20px 20px;
+            margin-top: 40px;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+        
+        .footer-section h4 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        
+        .footer-section ul {
+            list-style: none;
+        }
+        
+        .footer-section li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-section a {
+            color: #aaa;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-section a:hover {
+            color: #ffdf00;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            margin-top: 30px;
+            border-top: 1px solid #444;
+            color: #aaa;
+            font-size: 14px;
+        }
+        
+        /* עיצוב מודלים */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            width: 90%;
+            max-width: 700px;
+            border-radius: 8px;
+            overflow: hidden;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            background-color: #3665f3;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .modal-footer {
+            padding: 20px;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .btn-primary {
+            background-color: #3665f3;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        /* עיצוב רספונסיבי */
+        @media (max-width: 1100px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+            
+            .categories-nav ul {
+                gap: 10px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .top-bar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 20px;
+            }
+            
+            .search-bar {
+                margin: 10px 0;
+                width: 100%;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            .categories-nav ul {
+                justify-content: center;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .products-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .user-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- כותרת וניווט עליון -->
+    <header>
+        <div class="top-bar">
+            <a href="#" class="logo">אתר<span>מכירות</span></a>
+            
+            <div class="search-bar">
+                <form id="search-form">
+                    <input type="text" placeholder="חפש מוצרים, קטגוריות וחנויות">
+                    <button type="submit"><i class="fas fa-search"></i> חיפוש</button>
+                </form>
+            </div>
+            
+            <div class="user-actions">
+                <a href="#"><i class="far fa-user"></i> חשבון שלי</a>
+                <a href="#"><i class="far fa-heart"></i> רשימת מעקב</a>
+                <a href="#"><i class="fas fa-shopping-cart"></i> עגלת קניות</a>
+            </div>
+        </div>
+        
+        <!-- תפריט קטגוריות -->
+        <nav class="categories-nav">
+            <ul id="main-categories">
+                <li><a href="#" class="active" data-category="all">ראשי</a></li>
+                <!-- קטגוריות יוטענו אוטומטית מה-JavaScript -->
+            </ul>
+            <a href="#" class="admin-panel-link" id="manage-categories-btn"><i class="fas fa-cogs"></i> ניהול קטגוריות</a>
+        </nav>
+    </header>
+
+    <!-- תוכן ראשי -->
+    <main class="main-container">
+        <!-- סרגל צד עם קטגוריות -->
+        <aside class="sidebar">
+            <h3>קטגוריות</h3>
+            <ul id="categories-list">
+                <li><a href="#" data-category="all">כל הקטגוריות</a></li>
+                <!-- קטגוריות משנה יוטענו אוטומטית מה-JavaScript -->
+            </ul>
+            
+            <h3 style="margin-top: 30px;">סינון לפי מחיר</h3>
+            <ul>
+                <li><a href="#" data-price="under100">עד 100 ש"ח</a></li>
+                <li><a href="#" data-price="100-500">100-500 ש"ח</a></li>
+                <li><a href="#" data-price="500-1000">500-1000 ש"ח</a></li>
+                <li><a href="#" data-price="over1000">מעל 1000 ש"ח</a></li>
+            </ul>
+        </aside>
+        
+        <!-- אזור המוצרים -->
+        <section class="products-area">
+            <div class="page-title">
+                <div>
+                    <h1>מוצרים מובילים היום</h1>
+                    <p>גלו את המוצרים הפופולריים ביותר באתר שלנו עם המחירים הטובים ביותר</p>
+                </div>
+                <button class="add-product-btn" id="add-product-btn"><i class="fas fa-plus"></i> הוסף מוצר חדש</button>
+            </div>
+            
+            <!-- רשת המוצרים -->
+            <div class="products-grid" id="products-container">
+                <!-- המוצרים יוטענו כאן דרך JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <!-- פוטר -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>קנייה ומכירה</h4>
+                <ul>
+                    <li><a href="#">הרשמה</a></li>
+                    <li><a href="#">התחלת מכירה</a></li>
+                    <li><a href="#">מדריך למתחילים</a></li>
+                    <li><a href="#">אסטרטגיות למכירה</a></li>
+                    <li><a href="#">אפליקציות לסלולר</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>מידע עלינו</h4>
+                <ul>
+                    <li><a href="#">אודות החברה</a></li>
+                    <li><a href="#">צור קשר</a></li>
+                    <li><a href="#">קריירה בחברה</a></li>
+                    <li><a href="#">תנאי שימוש</a></li>
+                    <li><a href="#">מדיניות פרטיות</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>עזרה ותמיכה</h4>
+                <ul>
+                    <li><a href="#">מרכז העזרה</a></li>
+                    <li><a href="#">פתרון סכסוכים</a></li>
+                    <li><a href="#">בטיחות ברשת</a></li>
+                    <li><a href="#">שאלות נפוצות</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h4>הישארו מעודכנים</h4>
+                <p>הירשמו לניוזלטר שלנו לקבלת עדכונים על מבצעים ומוצרים חדשים</p>
+                <form style="margin-top: 15px;">
+                    <input type="email" placeholder="הזן את האימייל שלך" style="padding: 8px; width: 100%; margin-bottom: 10px;">
+                    <button type="submit" style="background-color: #3665f3; color: white; border: none; padding: 8px 15px; width: 100%; cursor: pointer;">הרשמה</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>© 2023 אתר מכירות. כל הזכויות שמורות.</p>
+        </div>
+    </footer>
+
+    <!-- מודל להוספת/עריכת מוצר -->
+    <div class="modal" id="product-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">הוסף מוצר חדש</h2>
+                <button class="close-modal" id="close-product-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="product-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="product-title">שם המוצר *</label>
+                            <input type="text" id="product-title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-price">מחיר (ש"ח) *</label>
+                            <input type="number" id="product-price" min="0" step="0.01" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="product-original-price">מחיר מקורי (ש"ח)</label>
+                            <input type="number" id="product-original-price" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="product-discount">הנחה (%)</label>
+                            <input type="number" id="product-discount" min="0" max="100" step="1">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="product-category">קטגוריה ראשית *</label>
+                            <select id="product-category" required>
+                                <!-- קטגוריות יוטענו מה-JavaScript -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-subcategory">תת-קטגוריה</label>
+                            <select id="product-subcategory">
+                                <option value="">ללא</option>
+                                <!-- תת-קטגוריות יוטענו מה-JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="product-seller">מוכר *</label>
+                            <input type="text" id="product-seller" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-condition">מצב *</label>
+                            <select id="product-condition" required>
+                                <option value="חדש">חדש</option>
+                                <option value="חדש באריזה">חדש באריזה</option>
+                                <option value="משומש מצב טוב">משומש מצב טוב</option>
+                                <option value="משומש מצב בינוני">משומש מצב בינוני</option>
+                                <option value="דרוש תיקון">דרוש תיקון</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="product-image">קישור לתמונה *</label>
+                        <input type="url" id="product-image" placeholder="https://example.com/image.jpg" required>
+                        <small>אפשר להשתמש בקישורים מ-<a href="https://unsplash.com" target="_blank">Unsplash</a> או מאתר אחר</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="product-description">תיאור המוצר</label>
+                        <textarea id="product-description"></textarea>
+                    </div>
+                    
+                    <input type="hidden" id="product-id">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-product-btn">ביטול</button>
+                <button class="btn btn-danger" id="delete-product-btn" style="display: none;">מחיקת מוצר</button>
+                <button class="btn btn-primary" id="save-product-btn">שמור מוצר</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- מודל לניהול קטגוריות -->
+    <div class="modal" id="categories-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>ניהול קטגוריות</h2>
+                <button class="close-modal" id="close-categories-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>קטגוריות ראשיות</label>
+                    <div id="main-categories-list">
+                        <!-- קטגוריות ראשיות יוצגו כאן -->
+                    </div>
+                    <div class="form-row" style="margin-top: 10px;">
+                        <input type="text" id="new-main-category" placeholder="שם קטגוריה ראשית חדשה">
+                        <button class="btn btn-primary" id="add-main-category-btn">הוסף קטגוריה</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>תת-קטגוריות</label>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="parent-category-select">קטגוריה ראשית</label>
+                            <select id="parent-category-select">
+                                <!-- קטגוריות ראשיות יוטענו כאן -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-subcategory">שם תת-קטגוריה חדשה</label>
+                            <input type="text" id="new-subcategory" placeholder="שם תת-קטגוריה">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" id="add-subcategory-btn">הוסף תת-קטגוריה</button>
+                    
+                    <div id="subcategories-list" style="margin-top: 20px;">
+                        <!-- תת-קטגוריות יוצגו כאן -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="close-categories-manager-btn">סגור</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // נתונים - קטגוריות ומוצרים
+        let categoriesData = {
+            main: ["אלקטרוניקה", "אופנה", "בית וגינה", "ספורט ופנאי", "כלי רכב", "אספנות וחפצי נוסטלגיה", "עסקים ותעשייה"],
+            sub: {
+                "אלקטרוניקה": ["טלפונים סלולריים", "מחשבים ניידים", "טלוויזיות", "מצלמות"],
+                "אופנה": ["נעליים", "בגדי גברים", "בגדי נשים", "תכשיטים"],
+                "בית וגינה": ["ריהוט", "כלי מטבח", "גינון", "תאורה"],
+                "ספורט ופנאי": ["ציוד כושר", "אופניים", "ציוד מחנאות", "צעצועים"]
+            }
+        };
+
+        let productsData = [
+            {
+                id: 1,
+                title: "סמארטפון Samsung Galaxy S23",
+                category: "אלקטרוניקה",
+                subcategory: "טלפונים סלולריים",
+                price: 3299,
+                originalPrice: 3899,
+                image: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+                discount: 15,
+                seller: "TechStore",
+                condition: "חדש באריזה",
+                description: "סמארטפון מתקדם עם מצלמה משופרת, מעבד חזק ובטריה לאורך יום שלם."
+            },
+            {
+                id: 2,
+                title: "מחשב נייד Dell XPS 13",
+                category: "אלקטרוניקה",
+                subcategory: "מחשבים ניידים",
+                price: 4799,
+                originalPrice: 5299,
+                image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+                discount: 10,
+                seller: "ComputerZone",
+                condition: "חדש",
+                description: "מחשב נייד קל וחזק עם מסך מגע באיכות גבוהה."
+            },
+            {
+                id: 3,
+                title: "נעלי ספורט Nike Air Max",
+                category: "אופנה",
+                subcategory: "נעליים",
+                price: 549,
+                originalPrice: 649,
+                image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+                discount: 15,
+                seller: "SportShoes",
+                condition: "חדש",
+                description: "נעלי ספורט נוחות ואיכותיות עם בולמי זעזועים."
+            }
+        ];
+
+        // משתנים גלובליים
+        let editingProductId = null;
+        let nextProductId = 4;
+
+        // פונקציה לטעינת קטגוריות לתפריטים
+        function loadCategories() {
+            // טעינת קטגוריות ראשיות לתפריט העליון
+            const mainCategoriesList = document.getElementById('main-categories');
+            mainCategoriesList.innerHTML = '<li><a href="#" class="active" data-category="all">ראשי</a></li>';
+            
+            categoriesData.main.forEach(category => {
+                mainCategoriesList.innerHTML += `
+                    <li><a href="#" data-category="${category}">${category}</a></li>
+                `;
+            });
+            
+            // טעינת קטגוריות לסרגל הצד
+            const sidebarCategoriesList = document.getElementById('categories-list');
+            sidebarCategoriesList.innerHTML = '<li><a href="#" data-category="all">כל הקטגוריות</a></li>';
+            
+            categoriesData.main.forEach(category => {
+                sidebarCategoriesList.innerHTML += `
+                    <li><a href="#" data-category="${category}">${category}</a></li>
+                `;
+                
+                // הוספת תת-קטגוריות אם קיימות
+                if (categoriesData.sub[category]) {
+                    categoriesData.sub[category].forEach(subcategory => {
+                        sidebarCategoriesList.innerHTML += `
+                            <li style="margin-right: 15px;"><a href="#" data-category="${subcategory}">› ${subcategory}</a></li>
+                        `;
+                    });
+                }
+            });
+            
+            // טעינת קטגוריות לטופס המוצר
+            const categorySelect = document.getElementById('product-category');
+            categorySelect.innerHTML = '<option value="">בחר קטגוריה</option>';
+            categoriesData.main.forEach(category => {
+                categorySelect.innerHTML += `<option value="${category}">${category}</option>`;
+            });
+            
+            // טעינת קטגוריות לניהול קטגוריות
+            const parentCategorySelect = document.getElementById('parent-category-select');
+            parentCategorySelect.innerHTML = '<option value="">בחר קטגוריה ראשית</option>';
+            categoriesData.main.forEach(category => {
+                parentCategorySelect.innerHTML += `<option value="${category}">${category}</option>`;
+            });
+            
+            // טעינת קטגוריות ראשיות לניהול קטגוריות
+            const mainCategoriesManager = document.getElementById('main-categories-list');
+            mainCategoriesManager.innerHTML = '';
+            categoriesData.main.forEach((category, index) => {
+                mainCategoriesManager.innerHTML += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background-color: #f8f9fa; margin-bottom: 5px; border-radius: 4px;">
+                        <span>${category}</span>
+                        <button class="btn btn-danger btn-sm" onclick="deleteMainCategory(${index})" style="padding: 4px 8px; font-size: 12px;">מחק</button>
+                    </div>
+                `;
+            });
+            
+            // טעינת תת-קטגוריות לניהול קטגוריות
+            const subcategoriesList = document.getElementById('subcategories-list');
+            subcategoriesList.innerHTML = '<h4>תת-קטגוריות קיימות:</h4>';
+            
+            for (const mainCategory in categoriesData.sub) {
+                if (categoriesData.sub[mainCategory].length > 0) {
+                    subcategoriesList.innerHTML += `<h5>${mainCategory}:</h5>`;
+                    categoriesData.sub[mainCategory].forEach((subcategory, index) => {
+                        subcategoriesList.innerHTML += `
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background-color: #f8f9fa; margin-bottom: 5px; border-radius: 4px;">
+                                <span>${subcategory}</span>
+                                <button class="btn btn-danger btn-sm" onclick="deleteSubcategory('${mainCategory}', ${index})" style="padding: 4px 8px; font-size: 12px;">מחק</button>
+                            </div>
+                        `;
+                    });
+                }
+            }
+        }
+        
+        // פונקציה לעדכון תת-קטגוריות בטופס המוצר
+        function updateSubcategoriesSelect(selectedCategory) {
+            const subcategorySelect = document.getElementById('product-subcategory');
+            subcategorySelect.innerHTML = '<option value="">ללא</option>';
+            
+            if (selectedCategory && categoriesData.sub[selectedCategory]) {
+                categoriesData.sub[selectedCategory].forEach(subcategory => {
+                    subcategorySelect.innerHTML += `<option value="${subcategory}">${subcategory}</option>`;
+                });
+            }
+        }
+
+        // פונקציה ליצירת כרטיס מוצר
+        function createProductCard(product) {
+            const discountBadge = product.discount > 0 
+                ? `<div class="product-badge">הנחה ${product.discount}%</div>` 
+                : '';
+            
+            const originalPriceDisplay = product.originalPrice > 0 
+                ? `<span class="product-original-price">${product.originalPrice} ש"ח</span>` 
+                : '';
+            
+            return `
+                <div class="product-card" data-category="${product.category}" data-subcategory="${product.subcategory}" data-price="${product.price}">
+                    <button class="edit-product-btn" onclick="editProduct(${product.id})"><i class="fas fa-edit"></i> ערוך</button>
+                    <div class="product-image">
+                        <img src="${product.image}" alt="${product.title}">
+                        ${discountBadge}
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">${product.title}</h3>
+                        <div class="product-price">
+                            ${originalPriceDisplay}
+                            ${product.price} ש"ח
+                        </div>
+                        <div class="product-meta">
+                            <span><i class="fas fa-store"></i> ${product.seller}</span>
+                            <span><i class="fas fa-tag"></i> ${product.condition}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // פונקציה לטעינת כל המוצרים
+        function loadAllProducts() {
+            const productsContainer = document.getElementById('products-container');
+            productsContainer.innerHTML = '';
+            
+            if (productsData.length === 0) {
+                productsContainer.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; background: white; border-radius: 8px;">
+                        <h3>אין עדיין מוצרים באתר</h3>
+                        <p>הוסף מוצר ראשון על ידי לחיצה על כפתור "הוסף מוצר חדש"</p>
+                    </div>
+                `;
+            } else {
+                productsData.forEach(product => {
+                    productsContainer.innerHTML += createProductCard(product);
+                });
+            }
+        }
+
+        // פונקציה לסינון מוצרים לפי קטגוריה
+        function filterProducts(category) {
+            const productsContainer = document.getElementById('products-container');
+            productsContainer.innerHTML = '';
+            
+            let filteredProducts;
+            
+            if (category === 'all') {
+                filteredProducts = productsData;
+            } else {
+                filteredProducts = productsData.filter(product => 
+                    product.category === category || product.subcategory === category
+                );
+            }
+            
+            if (filteredProducts.length === 0) {
+                productsContainer.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; background: white; border-radius: 8px;">
+                        <h3>לא נמצאו מוצרים בקטגוריה זו</h3>
+                        <p>נסו לחפש בקטגוריה אחרת</p>
+                    </div>
+                `;
+            } else {
+                filteredProducts.forEach(product => {
+                    productsContainer.innerHTML += createProductCard(product);
+                });
+            }
+        }
+
+        // פונקציה לסינון לפי מחיר
+        function filterByPrice(priceRange) {
+            const productsContainer = document.getElementById('products-container');
+            productsContainer.innerHTML = '';
+            
+            let filteredProducts = [];
+            
+            switch(priceRange) {
+                case 'under100':
+                    filteredProducts = productsData.filter(product => product.price < 100);
+                    break;
+                case '100-500':
+                    filteredProducts = productsData.filter(product => product.price >= 100 && product.price <= 500);
+                    break;
+                case '500-1000':
+                    filteredProducts = productsData.filter(product => product.price >= 500 && product.price <= 1000);
+                    break;
+                case 'over1000':
+                    filteredProducts = productsData.filter(product => product.price > 1000);
+                    break;
+                default:
+                    filteredProducts = productsData;
+            }
+            
+            if (filteredProducts.length === 0) {
+                productsContainer.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; background: white; border-radius: 8px;">
+                        <h3>לא נמצאו מוצרים בטווח מחירים זה</h3>
+                        <p>נסו טווח מחירים אחר</p>
+                    </div>
+                `;
+            } else {
+                filteredProducts.forEach(product => {
+                    productsContainer.innerHTML += createProductCard(product);
+                });
+            }
+        }
+
+        // פונקציה לפתיחת טופס הוספת מוצר
+        function openAddProductModal() {
+            editingProductId = null;
+            document.getElementById('modal-title').textContent = "הוסף מוצר חדש";
+            document.getElementById('product-form').reset();
+            document.getElementById('product-id').value = '';
+            document.getElementById('delete-product-btn').style.display = 'none';
+            document.getElementById('product-modal').style.display = 'flex';
+        }
+
+        // פונקציה לפתיחת טופס עריכת מוצר
+        function editProduct(productId) {
+            const product = productsData.find(p => p.id === productId);
+            if (!product) return;
+            
+            editingProductId = productId;
+            document.getElementById('modal-title').textContent = "ערוך מוצר";
+            document.getElementById('product-id').value = product.id;
+            document.getElementById('product-title').value = product.title;
+            document.getElementById('product-price').value = product.price;
+            document.getElementById('product-original-price').value = product.originalPrice || '';
+            document.getElementById('product-discount').value = product.discount || '';
+            document.getElementById('product-category').value = product.category;
+            updateSubcategoriesSelect(product.category);
+            document.getElementById('product-subcategory').value = product.subcategory || '';
+            document.getElementById('product-seller').value = product.seller;
+            document.getElementById('product-condition').value = product.condition;
+            document.getElementById('product-image').value = product.image;
+            document.getElementById('product-description').value = product.description || '';
+            
+            document.getElementById('delete-product-btn').style.display = 'inline-block';
+            document.getElementById('product-modal').style.display = 'flex';
+        }
+
+        // פונקציה לשמירת מוצר (הוספה או עריכה)
+        function saveProduct() {
+            // איסוף נתונים מהטופס
+            const productId = document.getElementById('product-id').value;
+            const title = document.getElementById('product-title').value;
+            const price = parseFloat(document.getElementById('product-price').value);
+            const originalPrice = document.getElementById('product-original-price').value ? 
+                parseFloat(document.getElementById('product-original-price').value) : 0;
+            const discount = document.getElementById('product-discount').value ? 
+                parseInt(document.getElementById('product-discount').value) : 0;
+            const category = document.getElementById('product-category').value;
+            const subcategory = document.getElementById('product-subcategory').value;
+            const seller = document.getElementById('product-seller').value;
+            const condition = document.getElementById('product-condition').value;
+            const image = document.getElementById('product-image').value;
+            const description = document.getElementById('product-description').value;
+            
+            // בדיקת תקינות
+            if (!title || !price || !category || !seller || !condition || !image) {
+                alert("אנא מלא את כל השדות המסומנים ב-*");
+                return;
+            }
+            
+            if (editingProductId) {
+                // עריכת מוצר קיים
+                const index = productsData.findIndex(p => p.id === editingProductId);
+                if (index !== -1) {
+                    productsData[index] = {
+                        id: editingProductId,
+                        title,
+                        price,
+                        originalPrice,
+                        discount,
+                        category,
+                        subcategory,
+                        seller,
+                        condition,
+                        image,
+                        description
+                    };
+                }
+            } else {
+                // הוספת מוצר חדש
+                const newProduct = {
+                    id: nextProductId++,
+                    title,
+                    price,
+                    originalPrice,
+                    discount,
+                    category,
+                    subcategory,
+                    seller,
+                    condition,
+                    image,
+                    description
+                };
+                productsData.push(newProduct);
+            }
+            
+            // סגירת המודל ורענון התצוגה
+            closeProductModal();
+            loadAllProducts();
+            
+            // הדגשת הקטגוריה של המוצר שהוסף/נערך
+            highlightCategory(category);
+        }
+
+        // פונקציה למחיקת מוצר
+        function deleteProduct() {
+            if (!editingProductId || !confirm("האם אתה בטוח שברצונך למחוק את המוצר?")) {
+                return;
+            }
+            
+            productsData = productsData.filter(p => p.id !== editingProductId);
+            closeProductModal();
+            loadAllProducts();
+        }
+
+        // פונקציה לסגירת מודל המוצר
+        function closeProductModal() {
+            document.getElementById('product-modal').style.display = 'none';
+        }
+
+        // פונקציה להדגשת קטגוריה בתפריט
+        function highlightCategory(category) {
+            const categoryLinks = document.querySelectorAll('.categories-nav a, .sidebar a[data-category]');
+            categoryLinks.forEach(link => link.classList.remove('active'));
+            
+            const activeLink = document.querySelector(`a[data-category="${category}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+            
+            filterProducts(category);
+        }
+
+        // פונקציות לניהול קטגוריות
+        function openCategoriesModal() {
+            document.getElementById('categories-modal').style.display = 'flex';
+        }
+        
+        function closeCategoriesModal() {
+            document.getElementById('categories-modal').style.display = 'none';
+        }
+        
+        function addMainCategory() {
+            const newCategoryInput = document.getElementById('new-main-category');
+            const newCategory = newCategoryInput.value.trim();
+            
+            if (!newCategory) {
+                alert("אנא הזן שם לקטגוריה");
+                return;
+            }
+            
+            if (categoriesData.main.includes(newCategory)) {
+                alert("קטגוריה זו כבר קיימת");
+                return;
+            }
+            
+            categoriesData.main.push(newCategory);
+            categoriesData.sub[newCategory] = [];
+            newCategoryInput.value = '';
+            
+            loadCategories();
+            alert("קטגוריה נוספה בהצלחה!");
+        }
+        
+        function addSubcategory() {
+            const parentCategory = document.getElementById('parent-category-select').value;
+            const newSubcategoryInput = document.getElementById('new-subcategory');
+            const newSubcategory = newSubcategoryInput.value.trim();
+            
+            if (!parentCategory) {
+                alert("אנא בחר קטגוריה ראשית");
+                return;
+            }
+            
+            if (!newSubcategory) {
+                alert("אנא הזן שם לתת-קטגוריה");
+                return;
+            }
+            
+            if (!categoriesData.sub[parentCategory]) {
+                categoriesData.sub[parentCategory] = [];
+            }
+            
+            if (categoriesData.sub[parentCategory].includes(newSubcategory)) {
+                alert("תת-קטגוריה זו כבר קיימת בקטגוריה זו");
+                return;
+            }
+            
+            categoriesData.sub[parentCategory].push(newSubcategory);
+            newSubcategoryInput.value = '';
+            
+            loadCategories();
+            alert("תת-קטגוריה נוספה בהצלחה!");
+        }
+        
+        function deleteMainCategory(index) {
+            if (!confirm("האם אתה בטוח שברצונך למחוק קטגוריה זו? כל תתי-הקטגוריות והמוצרים בה יימחקו.")) {
+                return;
+            }
+            
+            const category = categoriesData.main[index];
+            
+            // מחיקת תתי-קטגוריות
+            delete categoriesData.sub[category];
+            
+            // מחיקת קטגוריה ראשית
+            categoriesData.main.splice(index, 1);
+            
+            // מחיקת מוצרים בקטגוריה זו
+            productsData = productsData.filter(p => p.category !== category);
+            
+            loadCategories();
+            loadAllProducts();
+            alert("קטגוריה נמחקה בהצלחה!");
+        }
+        
+        function deleteSubcategory(mainCategory, index) {
+            if (!confirm("האם אתה בטוח שברצונך למחוק תת-קטגוריה זו?")) {
+                return;
+            }
+            
+            categoriesData.sub[mainCategory].splice(index, 1);
+            
+            // עדכון מוצרים שהיו בתת-קטגוריה זו
+            productsData.forEach(product => {
+                if (product.subcategory === mainCategory && product.subcategory === categoriesData.sub[mainCategory][index]) {
+                    product.subcategory = '';
+                }
+            });
+            
+            loadCategories();
+            alert("תת-קטגוריה נמחקה בהצלחה!");
+        }
+
+        // אתחול האתר
+        document.addEventListener('DOMContentLoaded', function() {
+            // טעינת קטגוריות ומוצרים
+            loadCategories();
+            loadAllProducts();
+            
+            // הוספת אירועי לחיצה לקטגוריות בתפריט העליון
+            document.addEventListener('click', function(e) {
+                if (e.target.matches('.categories-nav a[data-category], .sidebar a[data-category]')) {
+                    e.preventDefault();
+                    
+                    // הסרת הדגשה מכל הקישורים
+                    document.querySelectorAll('.categories-nav a, .sidebar a[data-category]').forEach(l => l.classList.remove('active'));
+                    
+                    // הדגשת הקישור הנוכחי
+                    e.target.classList.add('active');
+                    
+                    // סינון המוצרים
+                    const category = e.target.getAttribute('data-category');
+                    if (category) {
+                        filterProducts(category);
+                    }
+                }
+                
+                // סינון לפי מחיר
+                if (e.target.matches('.sidebar a[data-price]')) {
+                    e.preventDefault();
+                    
+                    // הסרת הדגשה מכל הקישורים
+                    document.querySelectorAll('.sidebar a[data-price]').forEach(l => l.classList.remove('active'));
+                    
+                    // הדגשת הקישור הנוכחי
+                    e.target.classList.add('active');
+                    
+                    // סינון לפי מחיר
+                    const priceRange = e.target.getAttribute('data-price');
+                    filterByPrice(priceRange);
+                }
+            });
+            
+            // הוספת אירוע לחיצה לחיפוש
+            document.getElementById('search-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const searchInput = this.querySelector('input');
+                const searchTerm = searchInput.value.toLowerCase();
+                
+                if (searchTerm.trim() === '') {
+                    loadAllProducts();
+                    return;
+                }
+                
+                const productsContainer = document.getElementById('products-container');
+                productsContainer.innerHTML = '';
+                
+                const filteredProducts = productsData.filter(product => 
+                    product.title.toLowerCase().includes(searchTerm) ||
+                    (product.description && product.description.toLowerCase().includes(searchTerm)) ||
+                    product.seller.toLowerCase().includes(searchTerm) ||
+                    product.category.toLowerCase().includes(searchTerm) ||
+                    (product.subcategory && product.subcategory.toLowerCase().includes(searchTerm))
+                );
+                
+                if (filteredProducts.length === 0) {
+                    productsContainer.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 40px; background: white; border-radius: 8px;">
+                            <h3>לא נמצאו תוצאות עבור "${searchTerm}"</h3>
+                            <p>נסו לחדש את החיפוש במילים אחרות</p>
+                        </div>
+                    `;
+                } else {
+                    filteredProducts.forEach(product => {
+                        productsContainer.innerHTML += createProductCard(product);
+                    });
+                }
+            });
+            
+            // אירועים למודל המוצר
+            document.getElementById('add-product-btn').addEventListener('click', openAddProductModal);
+            document.getElementById('close-product-modal').addEventListener('click', closeProductModal);
+            document.getElementById('cancel-product-btn').addEventListener('click', closeProductModal);
+            document.getElementById('save-product-btn').addEventListener('click', saveProduct);
+            document.getElementById('delete-product-btn').addEventListener('click', deleteProduct);
+            
+            // עדכון תת-קטגוריות כאשר משנים קטגוריה ראשית
+            document.getElementById('product-category').addEventListener('change', function() {
+                updateSubcategoriesSelect(this.value);
+            });
+            
+            // אירועים למודל ניהול קטגוריות
+            document.getElementById('manage-categories-btn').addEventListener('click', function(e) {
+                e.preventDefault();
+                openCategoriesModal();
+            });
+            
+            document.getElementById('close-categories-modal').addEventListener('click', closeCategoriesModal);
+            document.getElementById('close-categories-manager-btn').addEventListener('click', closeCategoriesModal);
+            document.getElementById('add-main-category-btn').addEventListener('click', addMainCategory);
+            document.getElementById('add-subcategory-btn').addEventListener('click', addSubcategory);
+            
+            // סגירת מודלים בלחיצה מחוץ לתוכן
+            window.addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal')) {
+                    e.target.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
